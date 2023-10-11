@@ -19,7 +19,7 @@ public:
 
     std::vector<uint8_t> getAtr();
 
-    std::vector<uint8_t> sendCommand(std::vector<uint8_t> const & command);
+    std::vector<uint8_t> sendCommand(std::vector<uint8_t> const& command);
 
     std::string getReader() { return _reader; }
 

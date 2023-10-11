@@ -16,10 +16,11 @@ std::string bytesToHex(std::vector<uint8_t> const& v)
 
 Pcsc::Pcsc()
 {
-    LONG rv = SCardEstablishContext(SCARD_SCOPE_SYSTEM,
-                                    nullptr,
-                                    nullptr,
-                                    &_context);
+    LONG rv = SCardEstablishContext(
+        SCARD_SCOPE_SYSTEM,
+        nullptr,
+        nullptr,
+        &_context);
     if(rv != SCARD_S_SUCCESS) {
         LOG(error) << "Error SCardEstablishContext: " << _getErrorMsg(rv);
         return;
@@ -44,10 +45,11 @@ std::vector<std::string> Pcsc::getReaders()
     LPSTR names = nullptr;
     DWORD count = SCARD_AUTOALLOCATE;
 
-    LONG rv = SCardListReaders(_context,
-                               nullptr,
-                               (LPTSTR)&names,
-                               &count);
+    LONG rv = SCardListReaders(
+        _context,
+        nullptr,
+        (LPTSTR)&names,
+        &count);
     if(rv != SCARD_S_SUCCESS) {
         LOG(error) << "Error SCardListReadersA: " << _getErrorMsg(rv);
         return std::vector<std::string>();
@@ -74,12 +76,13 @@ bool Pcsc::connect(std::string reader)
 {
     _reader = reader;
 
-    LONG rv = SCardConnect(_context,
-                           _reader.data(),
-                           SCARD_SHARE_SHARED,
-                           SCARD_PROTOCOL_ANY,
-                           &_readerHandle,
-                           &_protocolType);
+    LONG rv = SCardConnect(
+        _context,
+        _reader.data(),
+        SCARD_SHARE_SHARED,
+        SCARD_PROTOCOL_ANY,
+        &_readerHandle,
+        &_protocolType);
     if(rv != SCARD_S_SUCCESS) {
         LOG(error) << "Error SCardConnectA: " << _getErrorMsg(rv);
         return false;
@@ -119,13 +122,14 @@ std::vector<uint8_t> Pcsc::getAtr()
     DWORD count = SCARD_AUTOALLOCATE;
     std::vector<uint8_t> atr(255, 0);
 
-    LONG rv = SCardStatus(_readerHandle,
-                          (LPTSTR)&names,
-                          &count,
-                          &state,
-                          &protocol,
-                          &atr[0],
-                          &size);
+    LONG rv = SCardStatus(
+        _readerHandle,
+        (LPTSTR)&names,
+        &count,
+        &state,
+        &protocol,
+        &atr[0],
+        &size);
     if(rv != SCARD_S_SUCCESS) {
         LOG(error) << "Error SCardStatus: " << _getErrorMsg(rv);
         return std::vector<uint8_t>();
@@ -141,7 +145,7 @@ std::vector<uint8_t> Pcsc::getAtr()
     return atr;
 }
 
-std::vector<uint8_t> Pcsc::sendCommand(std::vector<uint8_t> const & command)
+std::vector<uint8_t> Pcsc::sendCommand(std::vector<uint8_t> const& command)
 {
     LONG rv;
     DWORD respSize = 255;
@@ -149,13 +153,14 @@ std::vector<uint8_t> Pcsc::sendCommand(std::vector<uint8_t> const & command)
 
     LOG(info) << "Command: " << bytesToHex(command);
 
-    rv = SCardTransmit(_readerHandle,
-                       &_protocol,
-                       command.data(),
-                       command.size(),
-                       nullptr,
-                       &resp[0],
-                       &respSize);
+    rv = SCardTransmit(
+        _readerHandle,
+        &_protocol,
+        command.data(),
+        command.size(),
+        nullptr,
+        &resp[0],
+        &respSize);
     if(rv != SCARD_S_SUCCESS) {
         LOG(error) << "Error SCardTransmit: " << _getErrorMsg(rv);
         return std::vector<uint8_t>();
@@ -173,13 +178,14 @@ std::vector<uint8_t> Pcsc::sendCommand(std::vector<uint8_t> const & command)
         respSize = 255;
         resp.resize(255, 0);
 
-        rv = SCardTransmit(_readerHandle,
-                           &_protocol,
-                           getRespCommand.data(),
-                           getRespCommand.size(),
-                           nullptr,
-                           &resp[0],
-                           &respSize);
+        rv = SCardTransmit(
+            _readerHandle,
+            &_protocol,
+            getRespCommand.data(),
+            getRespCommand.size(),
+            nullptr,
+            &resp[0],
+            &respSize);
         if(rv != SCARD_S_SUCCESS) {
             LOG(error) << "Error SCardTransmit: " << _getErrorMsg(rv);
             return std::vector<uint8_t>();
