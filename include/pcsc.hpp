@@ -14,7 +14,7 @@ public:
 
     std::vector<std::string> getReaders();
 
-    bool connect(std::string reader);
+    bool connect(std::string_view reader);
     bool disconnect();
 
     std::vector<uint8_t> getAtr();

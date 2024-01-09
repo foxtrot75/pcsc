@@ -72,7 +72,7 @@ std::vector<std::string> Pcsc::getReaders()
     return readers;
 }
 
-bool Pcsc::connect(std::string reader)
+bool Pcsc::connect(std::string_view reader)
 {
     _reader = reader;
 
